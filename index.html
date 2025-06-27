@@ -2,14 +2,263 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz - IA & Océans : La Vague Invisible de Pollution</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Quiz IA & Océans 🌊</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quiz-container {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.7s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .progress-bar {
+      width: 100%;
+      background: #e0f7fa;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      height: 12px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #00bcd4, #2196f3);
+      width: 0%;
+      transition: width 0.4s;
+    }
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 12px;
+      color: #00796b;
+    }
+    .question {
+      font-size: 1.1em;
+      margin-bottom: 18px;
+      color: #222;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .option-btn {
+      background: #e3f2fd;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      outline: none;
+    }
+    .option-btn.correct {
+      background: #a5d6a7;
+      color: #1b5e20;
+    }
+    .option-btn.wrong {
+      background: #ef9a9a;
+      color: #b71c1c;
+    }
+    .option-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    .next-btn {
+      background: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .next-btn:hover {
+      background: #1976d2;
+    }
+    .score {
+      font-size: 1.3em;
+      margin: 18px 0 8px 0;
+      color: #00796b;
+      font-weight: bold;
+    }
+    .restart-btn {
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+    }
+    .restart-btn:hover {
+      background: #0097a7;
+    }
+    @media (max-width: 500px) {
+      .quiz-container {
+        padding: 18px 4px;
+        max-width: 98vw;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Quiz : IA & Océans 🌊</h1>
-  <div id="quiz"></div>
-  <button id="nextBtn" style="display:none;">Question suivante</button>
-  <div id="result"></div>
-  <script src="script.js"></script>
+  <div class="quiz-container" id="quizApp">
+    <h1>Quiz IA & Océans 🌊</h1>
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <button class="next-btn" id="nextBtn" style="display:none;">Question suivante</button>
+    <div class="score" id="score" style="display:none;"></div>
+    <button class="restart-btn" id="restartBtn" style="display:none;">Rejouer</button>
+  </div>
+  <script>
+    const quiz = [
+      {
+        q: "Combien d'eau les data centers consomment-ils chaque année pour l'IA ?",
+        options: [
+          "2 milliards de litres",
+          "20 milliards de litres",
+          "200 milliards de litres"
+        ],
+        answer: 2
+      },
+      {
+        q: "Quel pourcentage de la chaleur des serveurs est rejeté dans l'environnement ?",
+        options: [
+          "50%",
+          "90%",
+          "10%"
+        ],
+        answer: 1
+      },
+      {
+        q: "Combien de déchets toxiques sont générés pour une tonne de métaux rares extraits ?",
+        options: [
+          "2 tonnes",
+          "200 tonnes",
+          "2000 tonnes"
+        ],
+        answer: 2
+      },
+      {
+        q: "Quelle est la consommation d'eau estimée pour les data centers en 2027 ?",
+        options: [
+          "6,6 millions de m³",
+          "6,6 milliards de m³",
+          "66 milliards de m³"
+        ],
+        answer: 1
+      },
+      {
+        q: "Quelle solution permet de réduire jusqu'à 90% la consommation d'eau pour le refroidissement ?",
+        options: [
+          "Refroidissement par air",
+          "Refroidissement par immersion",
+          "Refroidissement par ventilateur"
+        ],
+        answer: 1
+      }
+    ];
+
+    let current = 0, score = 0, answered = false;
+
+    const questionDiv = document.getElementById('question');
+    const optionsDiv = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+    const progress = document.getElementById('progress');
+    const scoreDiv = document.getElementById('score');
+    const restartBtn = document.getElementById('restartBtn');
+
+    function showQuestion() {
+      answered = false;
+      nextBtn.style.display = "none";
+      scoreDiv.style.display = "none";
+      restartBtn.style.display = "none";
+      const q = quiz[current];
+      questionDiv.textContent = q.q;
+      optionsDiv.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = "option-btn";
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(btn, i);
+        optionsDiv.appendChild(btn);
+      });
+      progress.style.width = ((current) / quiz.length * 100) + "%";
+    }
+
+    function selectOption(btn, idx) {
+      if (answered) return;
+      answered = true;
+      const q = quiz[current];
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.answer) b.classList.add('correct');
+        if (i === idx && i !== q.answer) b.classList.add('wrong');
+      });
+      if (idx === q.answer) score++;
+      nextBtn.style.display = "inline-block";
+    }
+
+    nextBtn.onclick = () => {
+      current++;
+      if (current < quiz.length) {
+        showQuestion();
+      } else {
+        showScore();
+      }
+    };
+
+    function showScore() {
+      questionDiv.textContent = "Quiz terminé !";
+      optionsDiv.innerHTML = "";
+      progress.style.width = "100%";
+      scoreDiv.style.display = "block";
+      let i = 0;
+      scoreDiv.textContent = "Votre score : 0 / " + quiz.length;
+      // Animation du score
+      const anim = setInterval(() => {
+        if (i <= score) {
+          scoreDiv.textContent = `Votre score : ${i} / ${quiz.length}`;
+          i++;
+        } else {
+          clearInterval(anim);
+        }
+      }, 200);
+      nextBtn.style.display = "none";
+      restartBtn.style.display = "inline-block";
+    }
+
+    restartBtn.onclick = () => {
+      current = 0;
+      score = 0;
+      showQuestion();
+    };
+
+    // Lancement
+    showQuestion();
+  </script>
 </body>
 </html>
