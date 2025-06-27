@@ -6,14 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
+  background-image: url('background.png');
+  background-size: cover;
+  background-position: center;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #00bcd4cc 0%, #2196f3cc 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+.quiz-container {
+  position: relative;
+  z-index: 1;
+  /* ...le reste du style... */
+}
     .quiz-container {
       background: #fff;
       border-radius: 18px;
