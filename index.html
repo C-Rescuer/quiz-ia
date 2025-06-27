@@ -5,9 +5,10 @@
   <title>Quiz IA & Océans 🌊</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
+    
+body {
   background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
-  background-image: url('background.png');
+  background-image: url('background.jpg'); /* ou 'img/background.jpg' */
   background-size: cover;
   background-position: center;
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -16,19 +17,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #00bcd4cc 0%, #2196f3cc 100%);
+  background: inherit;
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px) brightness(0.7);
   z-index: 0;
   pointer-events: none;
 }
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #00bcd4cc 0%, #2196f3cc 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .quiz-container {
   position: relative;
-  z-index: 1;
-  /* ...le reste du style... */
+  z-index: 2;
 }
     .quiz-container {
       background: #fff;
